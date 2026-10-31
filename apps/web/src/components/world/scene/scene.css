@@ -1,0 +1,4 @@
+.bn-world-label { font-size: 9.5px; padding: 3px 8px 3px 7px; gap: 5px; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; opacity: var(--bn-label-o, 1); transition: opacity 0.25s ease; }
+.bn-world-label .dot { width: 5px; height: 5px; }
+.bn-world-label[data-tone="ok"] .dot { background: #b9b9c2; }
+.bn-world-canvas canvas { outline: none; touch-action: none; }

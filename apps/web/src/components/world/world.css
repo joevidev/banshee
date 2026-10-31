@@ -1,0 +1,34 @@
+/* Banshee world UI: glass surfaces floating over the full-screen 3D world. Light, minimal, one red accent. */
+.world-root { position: fixed; inset: 0; overflow: hidden; background: radial-gradient(1200px 800px at 50% 35%, #ffffff 0%, #f1f1f3 60%, #e7e7ea 100%); color: var(--ink); }
+.world-canvas { position: absolute; inset: 0; }
+
+.glass {
+  background: rgba(255, 255, 255, 0.58);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  backdrop-filter: blur(22px) saturate(165%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 40px rgba(10, 10, 10, 0.12), 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 0 0 0.5px rgba(10, 10, 10, 0.06);
+  border-radius: 18px;
+}
+.glass-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: 999px;
+  font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: 0.02em; color: var(--ink);
+  background: rgba(255, 255, 255, 0.6);
+  -webkit-backdrop-filter: blur(16px) saturate(160%); backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow: 0 6px 20px rgba(10, 10, 10, 0.08);
+}
+.glass-chip[data-tone="bad"] { color: var(--red); border-color: rgba(229, 72, 77, 0.35); background: rgba(253, 236, 236, 0.7); }
+.glass-chip[data-tone="ok"] .dot { background: #1a1a1a; }
+.glass-chip .dot { width: 6px; height: 6px; border-radius: 50%; background: #9a9a9a; }
+.glass-chip[data-tone="bad"] .dot { background: var(--red); }
+
+.gw { position: absolute; display: flex; flex-direction: column; overflow: hidden; touch-action: none; }
+.gw-head { display: flex; align-items: center; gap: 8px; padding: 9px 10px 9px 14px; cursor: grab; user-select: none; border-bottom: 1px solid rgba(10, 10, 10, 0.06); }
+.gw-head:active { cursor: grabbing; }
+.gw-title { font-family: var(--font-geist-mono), monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); flex: 1; }
+.gw-btn { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-size: 13px; line-height: 1; }
+.gw-btn:hover { background: rgba(10, 10, 10, 0.06); color: var(--ink); }
+.gw-body { flex: 1; min-height: 0; overflow: auto; }
+.gw[data-collapsed="true"] .gw-body { display: none; }
