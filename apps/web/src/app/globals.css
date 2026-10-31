@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --ink: #111111;
+  --muted: #6b6b6b;
+  --faint: #a3a3a3;
+  --line: #e5e5e5;
+  --line-strong: #d4d4d4;
+  --card: #ffffff;
+  --red: #e5484d;
+  --red-soft: #fdecec;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-card: var(--card);
+  --color-red: var(--red);
+  --color-red-soft: var(--red-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- 3D office overlays ---------- */
+.bn-canvas {
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+.bn-canvas-loading {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.bn-spot-label {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--line);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.bn-spot-label--red {
+  color: var(--red);
+  border-color: color-mix(in srgb, var(--red) 40%, transparent);
+}
+
+.bn-agent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+}
+.bn-tag {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--ink);
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.bn-tag--alert {
+  box-shadow: 0 0 0 2px var(--red);
+}
+.bn-activity {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.bn-bubble {
+  position: relative;
+  width: max-content;
+  max-width: 240px;
+  margin-bottom: 6px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  padding: 6px 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  animation: bn-bubble 6s ease forwards;
+  white-space: normal;
+}
+.bn-bubble__body {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bn-bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  transform: translateX(-50%) rotate(45deg);
+}
+.bn-bubble--in {
+  background: var(--ink);
+  color: #fff;
+}
+.bn-bubble--in::after {
+  background: var(--ink);
+}
+.bn-bubble__from {
+  color: var(--faint);
+  margin-right: 4px;
+}
+@keyframes bn-bubble {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  5% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bn-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.bn-blink {
+  animation: bn-blink 1s steps(1) infinite;
+}
+@keyframes bn-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--red) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--red) 0%, transparent);
+  }
+}
+.bn-pulse {
+  animation: bn-pulse 1.6s ease-in-out infinite;
+}
+@keyframes bn-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.bn-in {
+  animation: bn-in 0.35s ease both;
+}
