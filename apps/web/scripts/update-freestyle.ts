@@ -43,7 +43,8 @@ try {
   await run("systemctl stop banshee-web && mv /srv/banshee-web /srv/banshee-web.prev && mv /srv/banshee-web.new /srv/banshee-web && systemctl start banshee-web")
   if (!(await healthy())) {
     console.error("new build unhealthy, restoring the previous one")
-    await run("systemctl stop banshee-web; rm -rf /srv/banshee-web && mv /srv/banshee-web.prev /srv/banshee-web && systemctl start banshee-web")
+    // only swap back when a previous build really exists; never delete the running tree otherwise
+    await run("if [ -d /srv/banshee-web.prev ]; then systemctl stop banshee-web; rm -rf /srv/banshee-web && mv /srv/banshee-web.prev /srv/banshee-web; fi; systemctl start banshee-web")
     throw new Error("update failed; previous build restored: " + (await run("journalctl -u banshee-web -n 5 --no-pager | cut -c1-200").catch(() => "")))
   }
   const ok = await fetch(`https://${domain}/`).then((r) => r.status === 200).catch(() => false)

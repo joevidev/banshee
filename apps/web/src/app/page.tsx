@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { EvidenceArt, PhoneArt, PingArt, RelayArt } from "@/components/landing/illustrations"
-import { LivePreview } from "@/components/landing/LivePreview"
+import { Hero } from "@/components/landing/Hero"
 
 export const metadata: Metadata = {
   title: "Banshee: services that investigate their own incidents",
@@ -41,17 +41,7 @@ const STEPS = [
   { art: <PingArt />, title: "A service pings", body: "Each service sends its numbers to its own agent. When error rate or latency leaves the baseline, that agent opens an incident." },
   { art: <RelayArt />, title: "Agents question each other", body: "They meet in a channel on Agent Relay and ask each other for evidence. Is it you, or are my errors coming from you?" },
   { art: <EvidenceArt />, title: "Root cause, with evidence", body: "The culprit is the earliest change that has a local cause: a deploy, a config change or a vendor error. Code picks it. The model only writes it up." },
-  { art: <PhoneArt />, title: "You approve on your phone", body: "On-call gets the evidence and one proposed fix. Approve, and the fix runs. Reject, and nothing changes." },
-]
-
-const ROWS: { what: string; real: boolean; detail: string }[] = [
-  { what: "Candy Shop services", real: true, detail: "Checkout, payments and inventory run as real HTTP services on a cloud VM, under real traffic from a load generator." },
-  { what: "The bad deploy", real: true, detail: "A real git commit with a real bug. The button checks it out on payments and restarts the service. The fix checks out the previous commit." },
-  { what: "Error rates, latency, error lines, deploy diffs", real: true, detail: "They come from the running services. Nothing is replayed." },
-  { what: "What the agents know", real: true, detail: "Agents only know what their tools return. They are not told which fault was pressed." },
-  { what: "The shop itself", real: false, detail: "It is our demo shop, not a customer's production." },
-  { what: "The card processor", real: false, detail: "A fake vendor service that we run and can switch off." },
-  { what: "The deploy pipeline", real: false, detail: "A script, not CI/CD." },
+  { art: <PhoneArt />, title: "They call you, you approve", body: "The agent calls the on-call phone with a spoken report. Ask it what happened or why this fix, then confirm with one tap. Approve, and the fix runs. Reject, and nothing changes." },
 ]
 
 export default function Home() {
@@ -64,33 +54,34 @@ export default function Home() {
             <span className="text-[17px] font-semibold tracking-tight text-ink">Banshee</span>
           </Link>
           <nav className="flex items-center gap-5 text-[13px] text-muted">
+            <a href="#try" className="hidden transition-colors hover:text-ink sm:inline">Try it</a>
             <a href="#how" className="hidden transition-colors hover:text-ink sm:inline">How it works</a>
             <a href="#why" className="hidden transition-colors hover:text-ink sm:inline">Why</a>
-            <a href="#real" className="hidden transition-colors hover:text-ink sm:inline">Real vs simulated</a>
-            <Link href="/room" className="rounded-full border border-line-strong bg-card px-3.5 py-1.5 font-medium text-ink transition-colors hover:border-ink">War room</Link>
+                        <Link href="/room" className="rounded-full border border-line-strong bg-card px-3.5 py-1.5 font-medium text-ink transition-colors hover:border-ink">War room</Link>
           </nav>
         </div>
       </header>
 
       <main className="flex-1">
-        {/* hero */}
-        <section className={wrap + " pb-12 pt-16 sm:pb-16 sm:pt-28"}>
-          <p className={eyebrow}>Haunted Hacks · Y Combinator</p>
-          <h1 className="mt-5 max-w-4xl text-[40px] font-semibold leading-[1.02] tracking-[-0.045em] text-ink sm:text-[72px]">
-            Your services investigate their own incidents.
-          </h1>
-          <p className="mt-6 max-w-2xl text-[17px] leading-relaxed text-muted sm:text-[19px]">
-            Every production service gets its own agent. When something breaks, the agents question each other, find the cause with evidence, and ask you to approve the fix from your phone.
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <PrimaryCta href="/chaos">Break production</PrimaryCta>
-            <SecondaryCta href="/room">Watch the war room</SecondaryCta>
-          </div>
-        </section>
+        <Hero />
 
-        {/* live preview */}
-        <section className={wrap + " pb-24 sm:pb-36"} aria-label="Live preview">
-          <LivePreview />
+        {/* what you can do */}
+        <section id="try" className={wrap + " scroll-mt-16 border-t border-line py-20 sm:py-28"}>
+          <p className={eyebrow}>Try it</p>
+          <h2 className={h2}>An office you can walk around, and a phone that rings.</h2>
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { t: "Walk the office", b: "Pan, zoom and click any ghost to ask what it is doing. Smoke and flames show what is broken; hammers and wrenches show who is fixing it." },
+              { t: "Break it from your phone", b: "Scan the QR code and press Bad deploy or Card processor down. It is a real commit and a real fault on a cloud VM." },
+              { t: "Pick up the call", b: "On-call rings like a phone. Talk to the agent by voice or chat, get the evidence, and confirm the fix yourself." },
+              { t: "Join the channel", b: "Follow the agents in the incident channel on Agent Relay, and post into the conversation yourself." },
+            ].map((f) => (
+              <li key={f.t} className="rounded-2xl border border-line bg-card p-5">
+                <h3 className="text-[17px] font-semibold tracking-tight text-ink">{f.t}</h3>
+                <p className="mt-2 text-[14px] leading-relaxed text-muted">{f.b}</p>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* how it works */}
@@ -115,7 +106,7 @@ export default function Home() {
           <h2 className={h2}>An agent that lives with its service needs a place to live, and a way to talk.</h2>
           <div className="mt-12 grid gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border border-line bg-card p-6 sm:p-8">
-              <h3 className="font-mono text-[12px] uppercase tracking-[0.14em] text-ink">Terse Durable Actors</h3>
+              <h3 className="font-mono text-[12px] uppercase tracking-[0.14em] text-ink">Terse Durable Actors · real time</h3>
               <dl className="mt-6 flex flex-col gap-6">
                 <div>
                   <dt className="text-[17px] font-semibold tracking-tight text-ink">State that survives, and wakes on an alarm</dt>
@@ -151,50 +142,11 @@ export default function Home() {
           </div>
         </section>
 
-        {/* real vs simulated */}
-        <section id="real" className={wrap + " scroll-mt-16 border-t border-line py-20 sm:py-28"}>
-          <p className={eyebrow}>Honest scope</p>
-          <h2 className={h2}>What is real, what is simulated.</h2>
-          <div className="mt-12 overflow-hidden rounded-2xl border border-line bg-card">
-            <table className="w-full border-collapse text-left">
-              <thead>
-                <tr className="border-b border-line font-mono text-[11px] uppercase tracking-[0.12em] text-muted">
-                  <th className="px-5 py-3 font-medium sm:w-[28%]">Part</th>
-                  <th className="px-3 py-3 font-medium sm:w-[14%]">Status</th>
-                  <th className="hidden px-5 py-3 font-medium sm:table-cell">Detail</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ROWS.map((r) => (
-                  <tr key={r.what} className="border-b border-line align-top last:border-0">
-                    <td className="px-5 py-4 text-[14px] font-medium text-ink">
-                      {r.what}
-                      <p className="mt-1.5 text-[13px] font-normal leading-relaxed text-muted sm:hidden">{r.detail}</p>
-                    </td>
-                    <td className="px-3 py-4">
-                      <span className={"inline-block rounded-full px-2.5 py-0.5 font-mono text-[11px] " + (r.real ? "bg-ink text-white" : "border border-line-strong text-muted")}>{r.real ? "Real" : "Simulated"}</span>
-                    </td>
-                    <td className="hidden px-5 py-4 text-[14px] leading-relaxed text-muted sm:table-cell">{r.detail}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
 
-        {/* team */}
+
+        {/* closing call to action */}
         <section className={wrap + " border-t border-line py-20 sm:py-28"}>
-          <p className={eyebrow}>Team</p>
-          <h2 className={h2}>Built by two people.</h2>
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-            {["Joel Timana", "Diana Munoz"].map((n) => (
-              <li key={n} className="flex items-center gap-4 rounded-2xl border border-line bg-card p-5">
-                <span className="grid size-11 place-items-center rounded-full bg-ink font-mono text-[13px] font-medium text-white">{n.split(" ").map((w) => w[0]).join("")}</span>
-                <span className="text-[17px] font-semibold tracking-tight text-ink">{n}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-12 flex flex-col gap-3 sm:flex-row">
+          <div className="flex flex-col gap-3 sm:flex-row">
             <PrimaryCta href="/chaos">Break production</PrimaryCta>
             <SecondaryCta href="/room">Watch the war room</SecondaryCta>
           </div>

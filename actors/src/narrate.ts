@@ -1,6 +1,6 @@
 /// <reference types="node" />
 // All human-readable text goes through here. The model is fed ONLY the evidence JSON and never chooses the culprit.
-// No key / error / > NARRATE_TIMEOUT_MS (4 s) -> templated text built from the same evidence.
+// No key / error / > NARRATE_TIMEOUT_MS (8 s) -> templated text built from the same evidence.
 import { generateText } from "ai"
 import { createOpenAI } from "@ai-sdk/openai"
 import { envNum, hhmmss } from "./types.js"
@@ -91,11 +91,11 @@ export const modelName = () => process.env.OPENAI_MODEL || "gpt-5.4-mini"
 export async function narrate(kind: NarrateKind, facts: F, opts: { timeoutMs?: number } = {}): Promise<Narration> {
   const t0 = Date.now()
   const fallback = (error?: string): Narration => {
-    if (error && error !== "no key") console.error(`[narrate] ${kind} fell back to template after ${Date.now() - t0} ms: ${error}`)
+    if (error) console.error(`[narrate] ${kind} fell back to template after ${Date.now() - t0} ms: ${error}`)
     return { text: templates[kind](facts), source: "template", ms: Date.now() - t0, error }
   }
   if (!process.env.OPENAI_API_KEY || process.env.NARRATE_MODE === "template") return fallback("no key")
-  const timeoutMs = opts.timeoutMs ?? envNum("NARRATE_TIMEOUT_MS", 4000)
+  const timeoutMs = opts.timeoutMs ?? envNum("NARRATE_TIMEOUT_MS", 8000)
   try {
     provider ??= createOpenAI({ apiKey: process.env.OPENAI_API_KEY })
     const res = await generateText({

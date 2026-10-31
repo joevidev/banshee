@@ -569,7 +569,8 @@ class MockEngine {
       }
     } else {
       this.ambientTick(now)
-      if (now > w.manualUntil && now - w.idleSince > AUTOPLAY_IDLE_MS) {
+      // Autoplay is OFF by default: nothing breaks unless someone presses a chaos button. Set BANSHEE_MOCK_AUTOPLAY=1 to bring the looping demo back.
+      if (process.env.BANSHEE_MOCK_AUTOPLAY === "1" && now > w.manualUntil && now - w.idleSince > AUTOPLAY_IDLE_MS) {
         const kind = AUTO_SEQUENCE[w.autoIdx++ % AUTO_SEQUENCE.length]
         this.chaos(kind, true)
       }

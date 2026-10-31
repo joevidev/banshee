@@ -1,0 +1,36 @@
+{
+  "status": 200,
+  "headers": {
+    "link": "</_next/static/media/GeistMono_Variable.p.1fz3wige2_h0o.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/Geist_Variable-s.p.2hh2rqmrrgs5n.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/chaos/layout,_N_T_/chaos/page,_N_T_/chaos"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/chaos/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 49216,
+    "slots": {
+      "children": {
+        "hints": 49248,
+        "slots": {
+          "children": {
+            "hints": 49312,
+            "slots": null
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/781b9292bfcb8d5bca98ca1697aad4cbf43feec2a4721c7ba246cf0c9f90c13f/$/chaos",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/chaos/page"
+    },
+    "isFallback": false
+  }
+}

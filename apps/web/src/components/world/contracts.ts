@@ -12,6 +12,10 @@ export const WORLD_EVENTS = {
   openBoard: "bn:open-board",
   /** detail: { service: ServiceName, x: number, y: number }  focus request, the scene moves the camera to that agent */
   focusAgent: "bn:focus-agent",
+  /** detail: {}  open the on-call call panel (HUD phone button, oncall door) */
+  openCall: "bn:open-call",
+  /** detail: { ringing: boolean }  the on-call phone starts or stops ringing (HUD badge) */
+  ringing: "bn:call-ringing",
 } as const
 
 export function emit<T>(name: string, detail: T) {

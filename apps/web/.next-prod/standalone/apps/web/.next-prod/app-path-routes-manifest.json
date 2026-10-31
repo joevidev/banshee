@@ -1,0 +1,19 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/approve/route": "/api/approve",
+  "/api/ask/route": "/api/ask",
+  "/api/call/route": "/api/call",
+  "/api/chaos/route": "/api/chaos",
+  "/api/ingest/route": "/api/ingest",
+  "/api/mock/stream/route": "/api/mock/stream",
+  "/api/office/socket/route": "/api/office/socket",
+  "/api/peer/route": "/api/peer",
+  "/api/realtime/session/route": "/api/realtime/session",
+  "/api/say/route": "/api/say",
+  "/chaos/page": "/chaos",
+  "/favicon.ico/route": "/favicon.ico",
+  "/oncall/page": "/oncall",
+  "/page": "/",
+  "/room/page": "/room"
+}

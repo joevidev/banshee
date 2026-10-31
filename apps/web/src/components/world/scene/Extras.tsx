@@ -9,6 +9,7 @@ import * as THREE from "three"
 import { useIncident, useLatestIncident, useOffice } from "@/lib/office/client"
 import { emit, WORLD_EVENTS } from "../contracts"
 import { FLOOR, SERVER_ROOM, WAR_TABLE } from "../../office/layout"
+import { BoardFx } from "./Effects"
 import { Block, EDGE, INK, PUMPKIN, RED, SpotLabel } from "./primitives"
 
 // ---------------- lighting / environment ----------------
@@ -436,6 +437,7 @@ export function KanbanBoard3D({ position = [8.2, 0, -2.3] as [number, number, nu
           </mesh>
         )}
       </group>
+      <BoardFx W={W} H={H} />
       <SpotLabel position={[0, 3.35, 0]} tone={counts.slice(0, 2).some(Boolean) ? "red" : "muted"}>
         incident board
       </SpotLabel>

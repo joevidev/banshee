@@ -1,0 +1,36 @@
+{
+  "status": 200,
+  "headers": {
+    "link": "</_next/static/media/GeistMono_Variable.p.1fz3wige2_h0o.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/Geist_Variable-s.p.2hh2rqmrrgs5n.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/room/layout,_N_T_/room/page,_N_T_/room"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/room/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 49216,
+    "slots": {
+      "children": {
+        "hints": 49248,
+        "slots": {
+          "children": {
+            "hints": 49312,
+            "slots": null
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/ea3299175b82beb210f34a9612ee0ac56cd31f332602d70e37a0477121b5cc14/$/room",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/room/page"
+    },
+    "isFallback": false
+  }
+}

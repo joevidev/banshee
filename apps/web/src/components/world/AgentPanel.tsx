@@ -2,7 +2,8 @@
 // Glass window for the selected spirit: who it is, what it is doing, what it said, and an ASK box.
 import type { ServiceName } from "@banshee/contracts"
 import { useState } from "react"
-import { useOffice } from "@/lib/office/client"
+import { CallCard } from "@/components/oncall/CallCard"
+import { useLatestIncident, useOffice } from "@/lib/office/client"
 import { GhostBadge } from "./GhostBadge"
 import { GlassWindow } from "./GlassWindow"
 import "./hud.css"
@@ -24,6 +25,8 @@ export function AgentPanel({ service, onClose }: { service: ServiceName; onClose
   const [qa, setQa] = useState<QA[]>([])
   const [text, setText] = useState("")
   const [busy, setBusy] = useState(false)
+  const [talk, setTalk] = useState(false)
+  const latest = useLatestIncident()
   const bad = p && p.mood === "alert"
 
   async function ask(question: string) {
@@ -43,7 +46,7 @@ export function AgentPanel({ service, onClose }: { service: ServiceName; onClose
   }
 
   return (
-    <GlassWindow id={`agent-${service}`} title="Spirit" anchor="tr" offset={{ x: 16, y: 76 }} size={{ w: 340 }} onClose={onClose}>
+    <GlassWindow id={`agent-${service}`} title="Spirit" anchor="tl" offset={{ x: 16, y: 300 }} size={{ w: 380 }} onClose={onClose}>
       <div className="ap">
         <div className="ap-hero">
           <GhostBadge service={service} size={64} />
@@ -52,6 +55,13 @@ export function AgentPanel({ service, onClose }: { service: ServiceName; onClose
             <p>{ROLE[service]}</p>
             {p && <span className="glass-chip" data-tone={bad ? "bad" : "ok"} style={{ marginTop: 8, boxShadow: "none" }}><span className="dot" />{p.mood}</span>}
           </div>
+        </div>
+
+        <div>
+          <button type="button" onClick={() => setTalk((t) => !t)} aria-expanded={talk} style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid rgba(0,0,0,.15)", background: talk ? "#141416" : "#fff", color: talk ? "#fff" : "#141416", fontWeight: 600, cursor: "pointer" }}>
+            {talk ? "Close call" : `Talk to spirit-${service}`}
+          </button>
+          {talk && <div style={{ marginTop: 8 }}><CallCard incident={latest} service={service} compact /></div>}
         </div>
 
         <div>

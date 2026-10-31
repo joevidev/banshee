@@ -9,6 +9,7 @@ import { GhostBadge } from "./GhostBadge"
 import { Rich } from "./feed/Rich"
 import { buildItems, GENERAL, mergeMessages, serviceOf, typingSpirit, type Item, type Msg } from "./feed/model"
 import "./feed.css"
+import "./feed-composer.css"
 
 const hhmm = (ts: number) => new Date(ts).toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" })
 const full = (ts: number) => new Date(ts).toLocaleString("en-US", { weekday: "short", month: "short", day: "numeric", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" })
@@ -110,7 +111,27 @@ function FeedWindow({ onClose }: { onClose: () => void }) {
   }, [active, counts])
 
   const inc = incByChannel[active]
-  const items = useMemo(() => buildItems(active, msgs, inc), [active, msgs, inc])
+  // The human's own messages: optimistic, local-only entries (the server only validates them).
+  const [mine, setMine] = useState<Msg[]>([])
+  const [draft, setDraft] = useState("")
+  const [sending, setSending] = useState(false)
+  const [sendErr, setSendErr] = useState("")
+  const allMsgs = useMemo(() => (mine.length ? [...msgs, ...mine].sort((a, b) => a.ts - b.ts) : msgs), [msgs, mine])
+  const items = useMemo(() => buildItems(active, allMsgs, inc), [active, allMsgs, inc])
+  const sendDraft = async () => {
+    const text = draft.trim()
+    if (!text || sending) return
+    setSending(true)
+    setSendErr("")
+    const ts = Date.now()
+    setMine((p) => [...p, { kind: "msg", key: `me|${active}|${ts}`, ts, from: "oncall-joel", channel: active, text }])
+    setDraft("")
+    try {
+      const r = await fetch("/api/say", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ channel: active, text, author: "oncall-joel" }) })
+      if (!r.ok) setSendErr("Not delivered")
+    } catch { setSendErr("Not delivered") }
+    setSending(false)
+  }
   const lastMsg = [...items].reverse().find((i): i is Msg => i.kind === "msg")
   const typing = typingSpirit(lastMsg, !!inc && inc.step !== "resolved" && items[items.length - 1] === lastMsg, now)
 
@@ -160,7 +181,7 @@ function FeedWindow({ onClose }: { onClose: () => void }) {
   })
 
   return (
-    <GlassWindow id="feed" title="Agents" anchor="bl" offset={{ x: 16, y: 76 }} size={{ w: 430, h: 520 }} onClose={onClose}>
+    <GlassWindow id="feed" title="Agents" anchor="bl" offset={{ x: 16, y: 84 }} size={{ w: 480, h: 500 }} onClose={onClose}>
       <div className="fd-root">
         <nav className="fd-rail" aria-label="Channels">
           {channels.map((c) => {
@@ -189,7 +210,8 @@ function FeedWindow({ onClose }: { onClose: () => void }) {
           </div>
           {pill > 0 && <button className="fd-newpill" onClick={jump}>New messages ↓</button>}
           <div className="fd-composer">
-            <textarea disabled rows={2} placeholder="Agents talk here. Humans approve on the board or from /oncall." aria-label="Composer (read-only)" />
+            <input value={draft} disabled={sending} maxLength={500} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendDraft() } }} placeholder={`Message #${active} as oncall-joel`} aria-label={`Message #${active}`} />
+            {sendErr && <span className="fd-send-err">{sendErr}</span>}
           </div>
         </section>
       </div>
@@ -214,6 +236,7 @@ function Row({ it, grouped }: { it: Item; grouped: boolean }) {
         {!grouped && (
           <div className="fd-meta">
             <b className="fd-name">{it.from}</b>
+            {it.from === "oncall-joel" && <span className="fd-you">you</span>}
             <span className="fd-time">{hhmm(it.ts)}</span>
           </div>
         )}

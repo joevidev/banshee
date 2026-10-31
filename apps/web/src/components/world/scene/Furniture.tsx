@@ -18,6 +18,7 @@ import {
   VENDOR_BOX,
   WAR_TABLE,
 } from "../../office/layout"
+import { DoorRing, ServiceFx } from "./Effects"
 import { Block, INK, PAPER, RED, SpotLabel } from "./primitives"
 
 type Health = OfficeState["health"]
@@ -243,6 +244,7 @@ export function ServerRacks({ health, healthRef }: { health?: Health; healthRef:
             <Block position={[0, 1.15, 0]} size={[1.25, 2.3, 0.9]} />
             <Block position={[0, 1.15, 0.44]} size={[1.05, 2.1, 0.02]} color="#1a1a1a" shadow={false} />
             <Leds service={s} healthRef={healthRef} />
+            <ServiceFx svc={s} healthRef={healthRef} />
             {/* label plate */}
             <SpotLabel position={[0, 0.05, 0.85]} tone={bad ? "red" : "muted"}>
               {s}
@@ -352,13 +354,23 @@ export function PhoneBooth({ vendor }: { vendor: Level }) {
 export function OncallDoor({ waiting }: { waiting: boolean }) {
   const [x, z] = ONCALL_DOOR
   const lamp = useRef<THREE.MeshStandardMaterial>(null)
+  const frame = useRef<THREE.Group>(null)
+  const amt = useRef(0)
   useFrame((state) => {
+    if (frame.current) {
+      const t = state.clock.elapsedTime
+      const burst = Math.sin(t * 4) > 0 ? 1 : 0.2
+      frame.current.rotation.z = Math.sin(t * 38) * 0.012 * amt.current * burst
+      frame.current.position.x = Math.sin(t * 31) * 0.012 * amt.current * burst
+    }
     if (!lamp.current) return
     const on = waiting && Math.sin(state.clock.elapsedTime * 4) > 0
     lamp.current.emissiveIntensity = on ? 0.9 : 0
   })
   return (
     <group position={[x, 0, z]}>
+      <DoorRing waiting={waiting} amt={amt} />
+      <group ref={frame} position={[0, 0, 0]}>
       <Block position={[0, 1.15, 0.05]} size={[1.3, 2.3, 0.12]} color="#fafafa" />
       <Block position={[0, 1.12, 0.12]} size={[1.1, 2.15, 0.04]} />
       <Block position={[0.4, 1.1, 0.17]} size={[0.06, 0.18, 0.06]} color={INK} />
@@ -367,6 +379,7 @@ export function OncallDoor({ waiting }: { waiting: boolean }) {
         <meshStandardMaterial ref={lamp} color={waiting ? RED : PAPER} emissive={RED} emissiveIntensity={0} />
         <Edges color={INK} />
       </mesh>
+      </group>
       <SpotLabel position={[0, 3.05, 0.2]} tone={waiting ? "red" : "muted"}>
         on-call
       </SpotLabel>
@@ -374,7 +387,7 @@ export function OncallDoor({ waiting }: { waiting: boolean }) {
   )
 }
 
-export function VendorBox({ vendor }: { vendor: Level }) {
+export function VendorBox({ vendor, healthRef }: { vendor: Level; healthRef: RefObject<Health | undefined> }) {
   const [x, z] = VENDOR_BOX
   const bad = vendor !== "ok"
   const mat = useRef<THREE.MeshStandardMaterial>(null)
@@ -404,6 +417,7 @@ export function VendorBox({ vendor }: { vendor: Level }) {
           <Edges color={bad ? RED : INK} />
         </mesh>
         <Block position={[0, 1.86, 0]} size={[1.4, 0.12, 1.4]} color={bad ? "#fde8e8" : PAPER} edge={bad ? RED : INK} />
+        <ServiceFx svc="vendor" healthRef={healthRef} top={1.95} spread={0.55} front={0.98} lightX={0.7} />
         <SpotLabel position={[0, 2.6, 0]} tone={bad ? "red" : "muted"}>
           {bad ? "card processor · down" : "card processor"}
         </SpotLabel>

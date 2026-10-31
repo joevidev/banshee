@@ -5,9 +5,9 @@
 .gh-name[data-selected="true"] { box-shadow: 0 8px 26px rgba(10, 10, 10, 0.16), 0 0 0 1px rgba(10, 10, 10, 0.55); }
 .gh-act { font-size: 10px; padding: 2px 8px; color: var(--muted); max-width: 190px; overflow: hidden; text-overflow: ellipsis; background: rgba(255, 255, 255, 0.5); box-shadow: none; }
 .gh-act[data-tone="bad"] { color: var(--red); }
-.gh-bubbles { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.gh-bubbles { width: max-content; max-width: 250px; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 8px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .gh-bubble {
-  position: relative; max-width: 230px; white-space: normal; padding: 7px 11px; border-radius: 14px; font-size: 12px; line-height: 1.35; color: var(--ink);
+  position: relative; width: max-content; max-width: 250px; white-space: normal; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; padding: 7px 11px; border-radius: 14px; font-size: 12px; line-height: 1.35; color: var(--ink);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   background: rgba(255, 255, 255, 0.78); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.85); box-shadow: 0 8px 26px rgba(10, 10, 10, 0.12), 0 0 0 0.5px rgba(10, 10, 10, 0.07);

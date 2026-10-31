@@ -93,7 +93,7 @@ export function KanbanPanel({ open, onClose }: { open: boolean; onClose: () => v
   if (!open) return null
   const selected = sel ? list.find((i) => i.id === sel) : undefined
   return (
-    <GlassWindow id="board" title="Incident board" anchor="tr" offset={{ x: 16, y: 76 }} size={{ w: 540, h: 420 }} onClose={onClose}>
+    <GlassWindow id="board" title="Incident board" anchor="tr" offset={{ x: 16, y: 210 }} size={{ w: typeof window === "undefined" ? 940 : Math.min(940, Math.max(700, window.innerWidth - 540)), h: 440 }} onClose={onClose}>
       <div className="kb-root">
         {selected ? (
           <Detail inc={selected} onBack={() => setSel(null)} />

@@ -236,7 +236,7 @@ function Scene({
       <Archive />
       <PhoneBooth vendor={health?.vendor ?? "ok"} />
       <OncallDoor waiting={waiting} />
-      <VendorBox vendor={health?.vendor ?? "ok"} />
+      <VendorBox vendor={health?.vendor ?? "ok"} healthRef={healthRef} />
       <Cobweb />
       <KanbanBoard3D />
       <Bats />

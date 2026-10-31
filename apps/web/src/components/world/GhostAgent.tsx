@@ -9,6 +9,8 @@ import { useNow, useOffice } from "@/lib/office/client"
 import { useOverlay } from "../office/primitives"
 import { GhostBadge } from "./GhostBadge"
 import { Costume } from "./ghost/Costume"
+import { Tool, TOOL_FOR } from "./ghost/Tools"
+import { ParticleLayer, useReducedMotionRef, type Pool } from "./scene/Effects"
 import { BUBBLE_MS, initMotion, retarget, step, type Motion } from "./ghost/motion"
 import "./ghost/ghost.css"
 
@@ -87,7 +89,26 @@ export function GhostAgent({ service, presence, selected, onSelect }: { service:
   const gh = useGhostGeometry()
   const portal = useOverlay()
   const now = useNow()
-  const chatter = useOffice()?.chatter
+  const office = useOffice()
+  const chatter = office?.chatter
+  const reduced = useReducedMotionRef()
+  // repairing: rolling back / applying a fix, or standing at its own broken rack
+  const repair =
+    /roll(ing)? ?back|enabl|appl(y|ying)|fix|patch|restart|toggl/i.test(presence.activity) ||
+    (presence.spot === "server_room" && (office?.health[service] ?? "ok") !== "ok")
+  const repairRef = useRef(repair)
+  useEffect(() => {
+    repairRef.current = repair
+  }, [repair])
+  const kind = TOOL_FOR[service]
+  const toolG = useRef<THREE.Group>(null)
+  const toolSwing = useRef<THREE.Group>(null)
+  const toolSpin = useRef<THREE.Group>(null)
+  const toolK = useRef(0)
+  const hammerPhase = useRef(0)
+  const bitAcc = useRef(0)
+  const impact = useRef(0)
+  const handPos = useRef(new THREE.Vector3(0.4, 0.7, 0.3))
 
   const alert = presence.mood === "alert"
   const done = presence.mood === "done"
@@ -157,7 +178,11 @@ export function GhostAgent({ service, presence, selected, onSelect }: { service:
       let ly = 0.55, ry = 0.55, lz = 0.1, rz = 0.1, lx = 0.4, rx = 0.4
       const flap = walking ? Math.sin(m.walkT * 8) * 0.06 : Math.sin(t * 1.8 + phase) * 0.015
       ly += flap; ry -= flap
-      if (working && work === "type") {
+      const tk = toolK.current
+      if (working && tk > 0.3) {
+        rx = 0.33; rz = 0.3
+        ry = 0.78 + (kind === "hammer" ? Math.sin(hammerPhase.current * Math.PI * 2) * 0.06 : Math.sin(t * 12) * 0.015)
+      } else if (working && work === "type") {
         ly = 0.6 + Math.max(0, Math.sin(t * 15)) * 0.05; ry = 0.6 + Math.max(0, Math.sin(t * 15 + 2.4)) * 0.05
         lz = rz = 0.27; lx = rx = 0.3
       } else if (working && work === "flashlight") {
@@ -173,9 +198,42 @@ export function GhostAgent({ service, presence, selected, onSelect }: { service:
       R.position.set(rx, ry, rz)
       hullL.current?.position.copy(L.position)
       hullR.current?.position.copy(R.position)
+      handPos.current.copy(R.position)
+    }
+    // tool in hand: scales in/out smoothly, animated while repairing
+    {
+      const want = repairRef.current && working ? 1 : 0
+      toolK.current += (want - toolK.current) * (1 - Math.exp(-dt / 0.12))
+      const tk = toolK.current
+      const g2 = toolG.current
+      if (g2) {
+        g2.visible = tk > 0.01
+        g2.scale.setScalar(Math.max(0.001, tk))
+        g2.position.copy(handPos.current)
+        const sw = toolSwing.current
+        if (sw && !reduced.current) {
+          if (kind === "hammer") {
+            const prev = hammerPhase.current
+            hammerPhase.current = (prev + dt * 1.15) % 1
+            const p = hammerPhase.current
+            // slow wind-up back, fast strike forward
+            sw.rotation.x = p < 0.72 ? 1.25 - (p / 0.72) * 1.85 : -0.6 + ((p - 0.72) / 0.28) ** 2 * 1.85
+            if (p < prev && tk > 0.8) impact.current = 1
+          } else if (kind === "wrench") {
+            sw.rotation.x = 0.5
+            sw.rotation.z = Math.sin(t * 5) * 0.7
+          } else {
+            sw.rotation.x = Math.PI / 2
+            sw.position.z = Math.sin(t * 7) * 0.03
+            if (toolSpin.current) toolSpin.current.rotation.y = t * 11
+          }
+        } else if (sw) {
+          sw.rotation.x = kind === "screwdriver" ? Math.PI / 2 : 0.5
+        }
+      }
     }
     if (flash.current) {
-      const on = working && work === "flashlight"
+      const on = working && work === "flashlight" && toolK.current < 0.3
       flash.current.visible = on
       if (on) {
         flash.current.rotation.y = Math.sin(t * 1.3) * 0.75
@@ -205,6 +263,23 @@ export function GhostAgent({ service, presence, selected, onSelect }: { service:
       })
     }
   })
+
+  const bitsUpdate = (p: Pool, dt: number, t: number) => {
+    const hp = handPos.current
+    if (toolK.current > 0.6) {
+      bitAcc.current += dt * 5
+      while (bitAcc.current >= 1) {
+        bitAcc.current -= 1
+        const gear = Math.random() > 0.55
+        p.spawn({ x: hp.x + 0.15 + (Math.random() - 0.5) * 0.35, y: hp.y + 0.2, z: hp.z + 0.2 + Math.random() * 0.3, vx: (Math.random() - 0.5) * 0.3, vy: 0.45 + Math.random() * 0.4, vz: 0.1, life: 1 + Math.random() * 0.6, size: gear ? 0.1 : 0.07, grav: -0.1, color: gear ? "#c7c9d4" : "#ffd27a" })
+      }
+    }
+    if (impact.current > 0) {
+      impact.current = 0
+      for (let i = 0; i < 7; i++) p.spawn({ x: hp.x + (Math.random() - 0.5) * 0.12, y: hp.y + 0.12, z: hp.z + 0.4, vx: (Math.random() - 0.5) * 1.2, vy: 0.3 + Math.random() * 0.9, vz: 0.2 + Math.random() * 0.8, life: 0.35 + Math.random() * 0.25, size: i < 3 ? 0.17 : 0.07, grow: i < 3 ? 0.35 : 0, grav: 3, color: i < 3 ? "#d9d4cc" : "#ffe2a8" })
+    }
+    void t
+  }
 
   // speech bubbles: last 2 lines from or to this agent, fading after 6 s
   const self = `spirit-${service}`
@@ -314,6 +389,14 @@ export function GhostAgent({ service, presence, selected, onSelect }: { service:
             </mesh>
           ))}
 
+          {/* repair tool (hand-held) + floating gear / spark bits + impact dust */}
+          <group ref={toolG} visible={false}>
+            <group ref={toolSwing}>
+              <Tool kind={kind} spin={toolSpin} />
+            </group>
+          </group>
+          <ParticleLayer count={22} update={bitsUpdate} />
+
           {/* flashlight sweep (server room) */}
           <group ref={flash} position={[0.3, 0.72, 0.28]} visible={false}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
@@ -343,7 +426,7 @@ export function GhostAgent({ service, presence, selected, onSelect }: { service:
       )}
 
       {/* name tag, activity, speech bubbles */}
-      {ready && <Html portal={portal} position={[0, service === "payments" ? 2.55 : 2.1, 0]} zIndexRange={[60, 20]} style={{ pointerEvents: "none" }}>
+      {ready && <Html portal={portal} position={[0, service === "payments" ? 2.55 : 2.1, 0]} zIndexRange={[15, 5]} style={{ pointerEvents: "none" }}>
         <div className="gh-stack" data-selected={selected}>
           {lines.length > 0 && (
             <div className="gh-bubbles">

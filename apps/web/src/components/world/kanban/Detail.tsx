@@ -3,6 +3,7 @@ import type { IncidentState } from "@banshee/contracts"
 import { useState } from "react"
 import { postApprove } from "@/lib/office/client"
 import { GhostBadge } from "../GhostBadge"
+import { Postmortem } from "../../oncall/Postmortem"
 import { isBroken, leadService, STEP_COLUMN } from "./model"
 
 const clock = (ts: number) => new Date(ts).toLocaleTimeString([], { hour12: false })
@@ -85,6 +86,7 @@ export function Detail({ inc, onBack }: { inc: IncidentState; onBack: () => void
           ))}
         </ol>
       </section>
+      {inc.postmortem && <Postmortem text={inc.postmortem} />}
     </div>
   )
 }
