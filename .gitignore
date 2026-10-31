@@ -1,0 +1,10 @@
+node_modules
+.next
+.env
+.env.local
+.terse
+.durable-actors
+dist
+.DS_Store
+.freestyle-vm.json
+.freestyle-web.json
