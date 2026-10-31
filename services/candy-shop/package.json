@@ -1,0 +1,22 @@
+{
+  "name": "candy-shop",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/supervisor.ts",
+    "load": "tsx src/load.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@banshee/contracts": "workspace:*",
+    "@hono/node-server": "^1.19.0",
+    "hono": "^4.10.0",
+    "tsx": "^4.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "freestyle": "^0.2.21",
+    "typescript": "^5"
+  }
+}
