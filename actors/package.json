@@ -1,0 +1,16 @@
+{
+  "name": "banshee-actors",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "terse actor dev"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^4.0.106",
+    "ai": "^7.0.159",
+    "terse-sdk": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6"
+  }
+}
