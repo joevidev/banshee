@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "type": "module",
+  "peerDependencies": {
+    "@banshee/contracts": "0.0.0"
+  }
+}
